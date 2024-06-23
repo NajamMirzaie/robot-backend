@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #e9f5e9;
+        }
+        #export-btn {
+        background-color: #008CBA; /* Blue background */
+        color: white; /* White text color */
+        border: none; /* No border */
+        padding: 10px 20px; /* Padding */
+        text-align: center; /* Center text */
+        text-decoration: none; /* No underline */
+        display: inline-block; /* Inline block element */
+        font-size: 16px; /* Font size */
+        margin-top: 10px; /* Top margin */
+        cursor: pointer; /* Cursor on hover */
+        border-radius: 4px; /* Rounded corners */
+    }
+
+    /* Button hover effect */
+    #export-btn:hover {
+        background-color: #005F6B; /* Darker blue */
+    }
+    </style>
+</head>
+<body>
+   <header>
+    <h1>All Data of Sensor</h1>
+    <button id="export-btn">Export to CSV</button>
+</header>
+
+    <div class="container">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nitrogen</th>
+                    <th>Phosphorus</th>
+                    <th>Potassium</th>
+                    <th>pH</th>
+                    <th>Temperature</th>
+                    <th>Moisture</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in datas %}
+                <tr>
+                    <td>{{ data.id }}</td>
+                    <td>{{ data.nitrogen }}</td>
+                    <td>{{ data.phosphorus }}</td>
+                    <td>{{ data.potassium }}</td>
+                    <td>{{ data.ph }}</td>
+                    <td>{{ data.temperature }}</td>
+                    <td>{{ data.moisture }}</td>
+                    <td>{{ data.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+<script>
+    document.getElementById('export-btn').addEventListener('click', function() {
+        // Generate CSV content from table data
+        var csv = [];
+        var rows = document.querySelectorAll('table tbody tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var row = [], cols = rows[i].querySelectorAll('td, th');
+
+            for (var j = 0; j < cols.length; j++) {
+                // Clean data for CSV format (e.g., remove commas to prevent parsing issues)
+                var data = cols[j].innerText.replace(/,/g, '');
+                row.push(data);
+            }
+
+            csv.push(row.join(','));
+        }
+
+        // Download the CSV file
+        downloadCSV(csv.join('\n'), 'sensor_data.csv');
+    });
+
+    function downloadCSV(csv, filename) {
+        var csvFile;
+        var downloadLink;
+
+        // CSV file
+        csvFile = new Blob([csv], {type: 'text/csv'});
+
+        // Download link
+        downloadLink = document.createElement('a');
+
+        // File name
+        downloadLink.download = filename;
+
+        // Create a link to the file
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+
+        // Hide download link
+        downloadLink.style.display = 'none';
+
+        // Add the link to DOM
+        document.body.appendChild(downloadLink);
+
+        // Click download link
+        downloadLink.click();
+    }
+</script>
+
+</body>
+</html>
